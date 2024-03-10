@@ -5,7 +5,7 @@ on:
     branches:
       - main
 env:
-  GH_TOKEN: ${{ secrets.GH_TOKEN }}
+  GH_TOKEN: ${{ secrets.BLOG }}
   TARGET_HUB: cqh96/cqh96.github.io
   THEME_REPO: jerryc127/hexo-theme-butterfly
   THEME_BRANCH: master
