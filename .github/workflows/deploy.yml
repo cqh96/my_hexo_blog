@@ -1,0 +1,56 @@
+name: Hexo Blog
+
+on:
+  push:
+    branches:
+      - main
+env:
+  GH_TOKEN: ${{ secrets.GH_TOKEN }}
+  TARGET_HUB: cqh96/cqh96.github.io
+  THEME_REPO: jerryc127/hexo-theme-butterfly
+  THEME_BRANCH: master
+
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Checkout theme repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{env.THEME_REPO}}
+          ref: ${{env.THEME_BRANCH}}
+          path: themes/butterfly
+
+      - name: Set up timezone
+        run: sudo timedatectl set-timezone 'Asia/Shanghai'
+
+      - name: Echo current time
+        run: timedatectl
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: 'yarn'
+
+      - name: Install Hexo CLI
+        run: npm install -g hexo-cli
+
+      - name: Install dependencies
+        uses: borales/actions-yarn@v4
+        with:
+          cmd: install
+      
+
+      - name: Build and Deploy
+        uses: theme-keep/hexo-deploy-github-pages-action@master # 使用专门部署 Hexo 到 GitHub pages 的 action
+        env:
+          PERSONAL_TOKEN: ${{ env.GH_TOKEN }} # secret 名
+          PUBLISH_REPOSITORY: ${{ env.TARGET_HUB }} # 公共仓库，格式：GitHub 用户名/仓库名
+          BRANCH: main # 分支，填 gh-pages 就行
+          PUBLISH_DIR: ./public # 部署 public 目录下的文件
+
